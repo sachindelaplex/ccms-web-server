@@ -17,7 +17,11 @@ var server = http.createServer(app).listen(port, function(req, res) {
   console.log("server is started ");
 });
 
-mongoose.connect("mongodb://localhost:27017/courtMonitoring");
+
+mongoose.connect("mongodb://localhost:27017/courtMonitoring", {
+  useCreateIndex : true,
+  useNewUrlParser : true
+});
 var db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
