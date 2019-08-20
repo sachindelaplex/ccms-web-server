@@ -6,9 +6,10 @@ var methodOverride = require("method-override");
 var bodyParser = require("body-parser");
 var http = require("http");
 var morgan = require("morgan");
+const cors = require("cors");
 
 var app = express();
-
+app.use(cors());
 var users = require('./routes/userRoutes');
 var courtRecord =  require('./routes/courtRoutes');
 
