@@ -4,7 +4,7 @@ var User = require("../model/user");
 var jwt = require("jsonwebtoken");
 var VerifyToken = require("../auth/verifyToken");
 
-router.post("/save",VerifyToken, function(req, res) {
+router.post("/save", function(req, res) {
 
   var user = new User({
     name: req.body.name,
