@@ -61,11 +61,51 @@ router.get("/getAll", VerifyToken, function(req, res, next) {
 router.get("/getCourt/:id", VerifyToken, function(req, res, next) {
   CourtRecord.findById({ _id: req.params.id }, function(err, data) {
     if (err) {
-      res.json(err);
+      res.status(500).json(err);
     } else {
       res.status(200).json(data);
     }
-  }).populate('policestation').populate('judge').populate('court');
+  })
+    .populate("policestation")
+    .populate("judge")
+    .populate("court");
+});
+
+router.post("/filter", function(req, res, next) {
+  if (req.body.created === undefined) {
+    var query = {
+      $match: {
+        $or: [
+          { created: new Date(req.body.created) },
+          { cctns_no: { $regex: req.body.cctns_no, $options: "i" } }
+        ]
+      }
+    };
+  } else if (req.body.cctns_no === undefined) {
+    var query = {
+      $match: {
+        $or: [{ created: new Date(req.body.created) }]
+      }
+    };
+  } else {
+    var query = {
+      $match: {
+        $and: [
+          { created: new Date(req.body.created) },
+          { cctns_no: { $regex: req.body.cctns_no, $options: "i" } }
+        ]
+      }
+    };
+  }
+
+  CourtRecord.aggregate([query], function(err, data) {
+    if (err) {
+      console.log(err);
+      res.status(500).json(err);
+    } else {
+      res.status(200).json(data);
+    }
+  });
 });
 
 router.put("/update", VerifyToken, function(req, res, next) {
@@ -99,7 +139,7 @@ router.delete("/delete/:id", VerifyToken, function(req, res, next) {
   });
 });
 
-router.get("/getRegistation", async (req, res, next) => {
+router.get("/getRegistation",VerifyToken, async (req, res, next) => {
   try {
     const policestation = await PoliceSation.find({});
     const judge = await Judge.find({});

@@ -2,10 +2,8 @@ var express = require("express");
 var router = express.Router();
 var User = require("../model/user");
 var jwt = require("jsonwebtoken");
-var VerifyToken = require("../auth/verifyToken");
 
 router.post("/save", function(req, res) {
-
   var user = new User({
     name: req.body.name,
     password: req.body.password,
