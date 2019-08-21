@@ -72,16 +72,16 @@ router.get("/getCourt/:id", VerifyToken, function(req, res, next) {
 });
 
 router.post("/filter",VerifyToken, function(req, res, next) {
-  if (req.body.created === undefined) {
+  console.log(req.body)
+  if (req.body.created === undefined || req.body.created=== '') {
     var query = {
       $match: {
         $or: [
-          { created: new Date(req.body.created) },
           { cctns_no: { $regex: req.body.cctns_no, $options: "i" } }
         ]
       }
     };
-  } else if (req.body.cctns_no === undefined) {
+  } else if (req.body.cctns_no === undefined || req.body.cctns_no === '' ) {
     var query = {
       $match: {
         $or: [{ created: new Date(req.body.created) }]
