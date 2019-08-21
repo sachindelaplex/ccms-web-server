@@ -71,7 +71,7 @@ router.get("/getCourt/:id", VerifyToken, function(req, res, next) {
     .populate("court");
 });
 
-router.post("/filter", function(req, res, next) {
+router.post("/filter",VerifyToken, function(req, res, next) {
   if (req.body.created === undefined) {
     var query = {
       $match: {
