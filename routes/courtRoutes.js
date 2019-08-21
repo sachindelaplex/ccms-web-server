@@ -1,4 +1,5 @@
 var express = require("express");
+var mongoose = require("mongoose");
 var async = require("async");
 var router = express.Router();
 var CourtRecord = require("../model/courtRecords");
@@ -7,11 +8,11 @@ var Judge = require("../model/judge");
 var Court = require("../model/court");
 var VerifyToken = require("../auth/verifyToken");
 
-router.post("/save", VerifyToken, function(req, res, next) {
+router.post("/save", function(req, res, next) {
   var record = new CourtRecord({
-    policestation: req.body.policestation,
-    court: req.body.court,
-    judge: req.body.judge,
+    policestation: mongoose.Types.ObjectId(req.body.policestation),
+    court: mongoose.Types.ObjectId(req.body.court),
+    judge: mongoose.Types.ObjectId(req.body.judge),
     cctns_no: req.body.cctns_no,
     fir_no: req.body.fir_no,
     cc_rcc_no: req.body.cc_rcc_no,
@@ -33,11 +34,12 @@ router.post("/save", VerifyToken, function(req, res, next) {
     witness: req.body.witness,
     panch: req.body.panch
   });
+
   record.save(function(err, data) {
     if (err) {
-      res.sendStatus(500).end("Record save failed " + err);
+      res.status(500).json("Record save failed. " + err);
     } else {
-      res.json(data);
+      res.status(200).json(data);
     }
   });
 });
@@ -45,15 +47,25 @@ router.post("/save", VerifyToken, function(req, res, next) {
 router.get("/getAll", VerifyToken, function(req, res, next) {
   CourtRecord.find({}, function(err, data) {
     if (err) {
-      res.json(err);
+      res.status(500).json(err);
     } else {
       if (data.length == 0) {
-        res.json("No Court Records");
+        res.status(200).json("No Court Records");
       } else {
-        res.json(data);
+        res.status(200).json(data);
       }
     }
   });
+});
+
+router.get("/getCourt/:id", VerifyToken, function(req, res, next) {
+  CourtRecord.findById({ _id: req.params.id }, function(err, data) {
+    if (err) {
+      res.json(err);
+    } else {
+      res.status(200).json(data);
+    }
+  }).populate('policestation').populate('judge').populate('court');
 });
 
 router.put("/update", VerifyToken, function(req, res, next) {
@@ -68,21 +80,21 @@ router.put("/update", VerifyToken, function(req, res, next) {
     data
   ) {
     if (err) {
-      res.status(500).end("court record update failed! " + err);
+      res.status(500).json("court record update failed! " + err);
     } else {
-      res.json(data);
+      res.status(200).json(data);
     }
   });
 });
 
 router.delete("/delete/:id", VerifyToken, function(req, res, next) {
-  console.log(req.params.id);
   CourtRecord.findByIdAndRemove({ _id: req.params.id }, function(err, data) {
     if (err) {
-      res.status(500).end("Court Record Deletion fail!");
+      res.status(500).json("Court Record Deletion fail!");
     } else {
-      if (data.length == 0) res.json("Court Records Deletion fail!");
-      else res.json("Court Record Deleted Successfully!");
+      if (data.length == 0)
+        res.status(200).json("Court Records Deletion fail!");
+      else res.status(200).json("Court Record Deleted Successfully!");
     }
   });
 });
@@ -92,12 +104,13 @@ router.get("/getRegistation", async (req, res, next) => {
     const policestation = await PoliceSation.find({});
     const judge = await Judge.find({});
     const court = await Court.find({});
-    res.json({ policestation: policestation, judge: judge, court: court });
+    res
+      .status(200)
+      .json({ policestation: policestation, judge: judge, court: court });
   } catch (e) {
     next(e);
   }
 });
-
 
 router.post("/savePolice", function(req, res, next) {
   var station = new PoliceSation({
@@ -109,7 +122,7 @@ router.post("/savePolice", function(req, res, next) {
   });
   station.save(function(err, data) {
     if (err) {
-      res.sendStatus(500).end("Station save failed " + err);
+      res.status(500).json("Station save failed. " + err);
     } else {
       res.json(data);
     }
@@ -126,9 +139,9 @@ router.post("/saveJudge", function(req, res, next) {
   });
   judge.save(function(err, data) {
     if (err) {
-      res.sendStatus(500).end("Judge save failed " + err);
+      res.status(500).json("Judge save failed. " + err);
     } else {
-      res.json(data);
+      res.status(200).json(data);
     }
   });
 });
@@ -141,9 +154,9 @@ router.post("/saveCourt", function(req, res, next) {
   });
   court.save(function(err, data) {
     if (err) {
-      res.sendStatus(500).end("Court save failed " + err);
+      res.status(500).json("Court save failed. " + err);
     } else {
-      res.json(data);
+      res.status(200).json(data);
     }
   });
 });

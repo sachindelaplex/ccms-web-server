@@ -6,17 +6,17 @@ var courtRecordsSchema = new Schema({
   policestation: {
     type: Schema.Types.ObjectId,
     ref: "PoliceStation",
-    // required: true
+    required: true
   },
-  courts: {
+  court: {
     type: Schema.Types.ObjectId,
     ref: "Court",
-    // required: true
+    required: true
   },
   judge: {
     type: Schema.Types.ObjectId,
     ref: "Judge",
-    // required: true
+    required: true
   },
   cctns_no: {
     type: String,

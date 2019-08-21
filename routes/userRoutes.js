@@ -23,7 +23,7 @@ router.post("/save",VerifyToken, function(req, res) {
 router.post("/login", function(req, res, next) {
   User.findOne({ name: req.body.name }, (err, user) => {
     if (err) {
-      console.log(err);
+      res.status(500).json("Login failed. " + err)
     } else {
       if (!user) {
         res.status(401).send("Invalid User");
@@ -34,7 +34,7 @@ router.post("/login", function(req, res, next) {
           if (err) {
             res.json(err);
           } else {
-            res.end(JSON.stringify({ id: user._id, token: token }));
+            res.json({ id: user._id, token: token });
           }
         });
       }
