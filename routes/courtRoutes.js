@@ -71,17 +71,15 @@ router.get("/getCourt/:id", VerifyToken, function(req, res, next) {
     .populate("court");
 });
 
-router.post("/filter",VerifyToken, function(req, res, next) {
-  console.log(req.body)
-  if (req.body.created === undefined || req.body.created=== '') {
+router.post("/filter", VerifyToken, function(req, res, next) {
+  console.log(req.body);
+  if (req.body.created === undefined || req.body.created === "") {
     var query = {
       $match: {
-        $or: [
-          { cctns_no: { $regex: req.body.cctns_no, $options: "i" } }
-        ]
+        $or: [{ cctns_no: { $regex: req.body.cctns_no, $options: "i" } }]
       }
     };
-  } else if (req.body.cctns_no === undefined || req.body.cctns_no === '' ) {
+  } else if (req.body.cctns_no === undefined || req.body.cctns_no === "") {
     var query = {
       $match: {
         $or: [{ created: new Date(req.body.created) }]
@@ -139,7 +137,7 @@ router.delete("/delete/:id", VerifyToken, function(req, res, next) {
   });
 });
 
-router.get("/getRegistation",VerifyToken, async (req, res, next) => {
+router.get("/getRegistation", VerifyToken, async (req, res, next) => {
   try {
     const policestation = await PoliceSation.find({});
     const judge = await Judge.find({});
@@ -164,7 +162,18 @@ router.post("/savePolice", function(req, res, next) {
     if (err) {
       res.status(500).json("Station save failed. " + err);
     } else {
-      res.json(data);
+      res.status(200).json(data);
+    }
+  });
+});
+
+router.get("/getAllPoliceStation", VerifyToken, function(req, res, next) {
+  PoliceSation.find({}, function(err, data) {
+    if (err) {
+      res.status(500).json("Police Station record failed " + err);
+    } else {
+      if (data.length == 0) res.status(200).json("No Police Station Records");
+      else res.status(200).json(data);
     }
   });
 });
