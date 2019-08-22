@@ -71,26 +71,83 @@ router.get("/getCourt/:id", VerifyToken, function(req, res, next) {
     .populate("court");
 });
 
-router.post("/filter", VerifyToken, function(req, res, next) {
-  console.log(req.body);
-  if (req.body.created === undefined || req.body.created === "") {
+router.post("/filter", function(req, res, next) {
+  const year = req.body.created.split("-")[0];
+  const month = req.body.created.split("-")[1];
+  const ObjectId = mongoose.Types.ObjectId;
+
+  if (!req.body.cctns_no && ObjectId.isValid(req.body.policestation)) {
     var query = {
-      $match: {
-        $or: [{ cctns_no: { $regex: req.body.cctns_no, $options: "i" } }]
+      $redact: {
+        $cond: [
+          {
+            $and: [
+              { $eq: [{ $year: "$hearing_date" }, +year] },
+              { $eq: [{ $month: "$hearing_date" }, +month] },
+              {
+                $eq: [
+                  "$policestation",
+                  mongoose.Types.ObjectId(req.body.policestation)
+                ]
+              }
+            ]
+          },
+          "$$KEEP",
+          "$$PRUNE"
+        ]
       }
     };
-  } else if (req.body.cctns_no === undefined || req.body.cctns_no === "") {
+  } else if (!ObjectId.isValid(req.body.policestation) && req.body.cctns_no) {
     var query = {
-      $match: {
-        $or: [{ created: new Date(req.body.created) }]
+      $redact: {
+        $cond: [
+          {
+            $and: [
+              { $eq: [{ $year: "$hearing_date" }, +year] },
+              { $eq: [{ $month: "$hearing_date" }, +month] },
+              { $eq: ["$cctns_no", req.body.cctns_no] }
+            ]
+          },
+          "$$KEEP",
+          "$$PRUNE"
+        ]
       }
     };
-  } else {
+  } else if (req.body.cctns_no && ObjectId.isValid(req.body.policestation)) {
+
     var query = {
-      $match: {
-        $and: [
-          { created: new Date(req.body.created) },
-          { cctns_no: { $regex: req.body.cctns_no, $options: "i" } }
+      $redact: {
+        $cond: [
+          {
+            $and: [
+              { $eq: [{ $year: "$hearing_date" }, +year] },
+              { $eq: [{ $month: "$hearing_date" }, +month] },
+              { $eq: ["$cctns_no", req.body.cctns_no] },
+              {
+                $eq: [
+                  "$policestation",
+                  mongoose.Types.ObjectId(req.body.policestation)
+                ]
+              }
+            ]
+          },
+          "$$KEEP",
+          "$$PRUNE"
+        ]
+      }
+    };
+  } else if(!req.body.cctns_no && !ObjectId.isValid(req.body.policestation)){
+    var query = {
+      $redact: {
+        $cond: [
+          {
+            $and: [
+              { $eq: [{ $year: "$hearing_date" }, +year] },
+              { $eq: [{ $month: "$hearing_date" }, +month] }
+            ]
+          },
+          "$$KEEP",
+          "$$PRUNE"
         ]
       }
     };
@@ -104,8 +161,16 @@ router.post("/filter", VerifyToken, function(req, res, next) {
       res.status(200).json(data);
     }
   });
-});
 
+  // CourtRecord.aggregate([query], function(err, data) {
+  //   if (err) {
+  //     console.log(err);
+  //     res.status(500).json(err);
+  //   } else {
+  //     res.status(200).json(data);
+  //   }
+  // });
+});
 router.put("/update", VerifyToken, function(req, res, next) {
   var conditions = {
       _id: req.body._id

@@ -48,7 +48,7 @@ var courtRecordsSchema = new Schema({
     required: true
   },
   bail: {
-    type: Boolean,
+    type: String,
     required: true
   },
   custody: {
@@ -84,18 +84,19 @@ var courtRecordsSchema = new Schema({
     required: true
   },
   bail_custody_status: {
-    type: Boolean,
+    type: String,
     required: true
   },
-  witness: { type: String, enum: ["Police", "Public"], default: "Police" },
+  witness: { type: String,
+  required:true
+  },
   panch: {
     type: String,
-    enum: ["Seizure Panch", "Other Panch"],
-    default: "Seizure Panch"
+    required:true
   },
   created: {
     type: Date,
-    default: Date.now
+    required:true
   }
 });
 
