@@ -3,6 +3,7 @@ var router = express.Router();
 var User = require("../model/user");
 var jwt = require("jsonwebtoken");
 
+// Create User API
 router.post("/save", function(req, res) {
   var user = new User({
     name: req.body.name,
@@ -18,10 +19,11 @@ router.post("/save", function(req, res) {
   });
 });
 
+// Login API
 router.post("/login", function(req, res, next) {
   User.findOne({ name: req.body.name }, (err, user) => {
     if (err) {
-      res.status(500).json("Login failed. " + err)
+      res.status(500).json("Login failed. " + err);
     } else {
       if (!user) {
         res.status(401).send("Invalid User");
@@ -32,25 +34,12 @@ router.post("/login", function(req, res, next) {
           if (err) {
             res.json(err);
           } else {
-            res.json({ id: user._id, token: token });
+            res.json({ id: user._id, token: token, role: user.role });
           }
         });
       }
     }
   });
 });
-
-
-// function verifyToken(req, res, next) {
-//   const bearerHeader = req.headers["authorization"];
-//   if (typeof bearerHeader !== "undefined") {
-//     const bearer = bearerHeader.split(" ");
-//     const bearerToken = bearer[1];
-//     req.token = bearerToken;
-//     next();
-//   } else {
-//     res.sendStatus(403);
-//   }
-// }
 
 module.exports = router;

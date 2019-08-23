@@ -42,7 +42,7 @@ var courtRecordsSchema = new Schema({
     type: String,
     required: true
   },
-  accused: { type: Array, default: [] },
+  accused: { type: String, required: true },
   hearing_date: {
     type: Date,
     required: true
@@ -87,16 +87,10 @@ var courtRecordsSchema = new Schema({
     type: String,
     required: true
   },
-  witness: { type: String,
-  required:true
-  },
-  panch: {
-    type: String,
-    required:true
-  },
+  case_action_states: { type: Array, default: [] },
   created: {
     type: Date,
-    required:true
+    required: true
   }
 });
 
