@@ -74,8 +74,8 @@ router.get("/getCourt/:id", VerifyToken, function(req, res, next) {
  
 // Fetch Court  Record by Search field
 router.post("/filter",VerifyToken, function(req, res, next) {
-  const year = req.body.created.split("-")[0];
-  const month = req.body.created.split("-")[1];
+  const year = req.body.hearing_date.split("-")[0];
+  const month = req.body.hearing_date.split("-")[1];
   const ObjectId = mongoose.Types.ObjectId;
 
   if (!req.body.cctns_no && ObjectId.isValid(req.body.policestation)) {
