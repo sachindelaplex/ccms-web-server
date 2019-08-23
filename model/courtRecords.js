@@ -35,7 +35,7 @@ var courtRecordsSchema = new Schema({
     required: true
   },
   time_of_registration: {
-    type: Date,
+    type: String,
     required: true
   },
   complaints: {

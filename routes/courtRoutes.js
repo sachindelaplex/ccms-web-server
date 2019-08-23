@@ -17,7 +17,7 @@ router.post("/save", VerifyToken, function(req, res, next) {
     fir_no: req.body.fir_no,
     cc_rcc_no: req.body.cc_rcc_no,
     date_of_registration: new Date(req.body.date_of_registration),
-    time_of_registration: new Date(req.body.time_of_registration),
+    time_of_registration: req.body.time_of_registration,
     complaints: req.body.complaints,
     accused: req.body.accused,
     hearing_date: new Date(req.body.hearing_date),
@@ -31,7 +31,8 @@ router.post("/save", VerifyToken, function(req, res, next) {
     pp: req.body.pp,
     io: req.body.io,
     bail_custody_status: req.body.bail_custody_status,
-    case_action_states: req.body.case_action_states
+    case_action_states: req.body.case_action_states,
+    created : new Date()
   });
 
   record.save(function(err, data) {
