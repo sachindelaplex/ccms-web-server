@@ -8,7 +8,7 @@ var Court = require("../model/court");
 var VerifyToken = require("../auth/verifyToken");
 
 // Save Courts Records
-router.post("/save",VerifyToken, function(req, res, next) {
+router.post("/save", VerifyToken, function(req, res, next) {
   var record = new CourtRecord({
     policestation: mongoose.Types.ObjectId(req.body.policestation),
     court: mongoose.Types.ObjectId(req.body.court),
@@ -31,7 +31,7 @@ router.post("/save",VerifyToken, function(req, res, next) {
     pp: req.body.pp,
     io: req.body.io,
     bail_custody_status: req.body.bail_custody_status,
-    case_action_states:req.body.case_action_states
+    case_action_states: req.body.case_action_states
   });
 
   record.save(function(err, data) {
@@ -59,8 +59,8 @@ router.get("/getAll", VerifyToken, function(req, res, next) {
 });
 
 // Fetch Court Record by Id
-router.get("/getCourt/:id", VerifyToken, function(req, res, next) {
-  CourtRecord.findById({ _id: req.params.id }, function(err, data) {
+router.get("/getCourt", VerifyToken, function(req, res, next) {
+  CourtRecord.findById({ _id: req.query.id }, function(err, data) {
     if (err) {
       res.status(500).json(err);
     } else {
@@ -71,9 +71,9 @@ router.get("/getCourt/:id", VerifyToken, function(req, res, next) {
     .populate("judge")
     .populate("court");
 });
- 
+
 // Fetch Court  Record by Search field
-router.post("/filter",VerifyToken, function(req, res, next) {
+router.post("/filter", VerifyToken, function(req, res, next) {
   const year = req.body.hearing_date.split("-")[0];
   const month = req.body.hearing_date.split("-")[1];
   const ObjectId = mongoose.Types.ObjectId;
@@ -116,7 +116,6 @@ router.post("/filter",VerifyToken, function(req, res, next) {
       }
     };
   } else if (req.body.cctns_no && ObjectId.isValid(req.body.policestation)) {
-
     var query = {
       $redact: {
         $cond: [
@@ -138,7 +137,7 @@ router.post("/filter",VerifyToken, function(req, res, next) {
         ]
       }
     };
-  } else if(!req.body.cctns_no && !ObjectId.isValid(req.body.policestation)){
+  } else if (!req.body.cctns_no && !ObjectId.isValid(req.body.policestation)) {
     var query = {
       $redact: {
         $cond: [
@@ -163,10 +162,9 @@ router.post("/filter",VerifyToken, function(req, res, next) {
       res.status(200).json(data);
     }
   });
-
 });
 
-// Update Court Record 
+// Update Court Record
 router.put("/update", VerifyToken, function(req, res, next) {
   var conditions = {
       _id: req.body.id
@@ -186,8 +184,7 @@ router.put("/update", VerifyToken, function(req, res, next) {
   });
 });
 
-
-// Delete Court Record 
+// Delete Court Record
 router.delete("/delete/:id", VerifyToken, function(req, res, next) {
   CourtRecord.findByIdAndRemove({ _id: req.params.id }, function(err, data) {
     if (err) {
@@ -215,7 +212,7 @@ router.get("/getRegistation", VerifyToken, async (req, res, next) => {
 });
 
 // Save Police Station Record
-router.post("/savePolice",VerifyToken, function(req, res, next) {
+router.post("/savePolice", VerifyToken, function(req, res, next) {
   var station = new PoliceSation({
     name: req.body.name,
     area: req.body.area,
@@ -245,7 +242,7 @@ router.get("/getAllPoliceStation", VerifyToken, function(req, res, next) {
 });
 
 // Save Judge  Record
-router.post("/saveJudge",VerifyToken, function(req, res, next) {
+router.post("/saveJudge", VerifyToken, function(req, res, next) {
   var judge = new Judge({
     name: req.body.name,
     email: req.body.email,
@@ -263,7 +260,7 @@ router.post("/saveJudge",VerifyToken, function(req, res, next) {
 });
 
 // Save Court  Record
-router.post("/saveCourt", VerifyToken,function(req, res, next) {
+router.post("/saveCourt", VerifyToken, function(req, res, next) {
   var court = new Court({
     name: req.body.name,
     type: req.body.type,
