@@ -26,15 +26,15 @@ router.post("/login", function(req, res, next) {
       res.status(500).json("Login failed. " + err);
     } else {
       if (!user) {
-        res.status(401).send("Invalid User");
+        res.status(200).json({err : "Invalid User", status: 401});
       } else if (user.password !== req.body.password) {
-        res.status(401).send("Invalid password");
+        res.status(200).json({err : "Invalid Password", status: 401});
       } else {
         jwt.sign(req.body, "courtkey", (err, token) => {
           if (err) {
             res.json(err);
           } else {
-            res.json({ id: user._id, token: token, role: user.role });
+            res.json({ id: user._id, token: token, role: user.role, status: 200 });
           }
         });
       }
